@@ -89,7 +89,7 @@ export default function DashboardLayout() {
         <div>
           <div className="mb-10">
             <h1 className="text-3xl font-black tracking-tight text-blue-950">SINIGAS ireng</h1>
-            <p className="text-sm text-slate-500 mt-1">Sistem Notifikasi Prioritas Tugas</p>
+            <p className="text-sm text-slate-500 mt-1">Sistem Notifikasi Prioritas Tugas samil blakutak</p>
           </div>
 
           <nav className="space-y-2 text-[15px]">
