@@ -88,8 +88,8 @@ export default function DashboardLayout() {
       <aside className="hidden lg:flex w-72 flex-col justify-between bg-white border-r border-slate-200 px-6 py-8 flex-shrink-0 overflow-y-auto">
         <div>
           <div className="mb-10">
-            <h1 className="text-3xl font-black tracking-tight text-blue-950">SINIGAS ireng</h1>
-            <p className="text-sm text-slate-500 mt-1">Sistem Notifikasi Prioritas Tugas samil blakutak</p>
+            <h1 className="text-3xl font-black tracking-tight text-blue-950">SINIGAS</h1>
+            <p className="text-sm text-slate-500 mt-1">Sistem Notifikasi Prioritas Tugas</p>
           </div>
 
           <nav className="space-y-2 text-[15px]">
