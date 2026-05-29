@@ -97,7 +97,7 @@ export default function Dashboard() {
     return () => { alive = false }
   }, [rows.length])
 
-  // ===== MEMO: HITUNG STATISTIK KEGIATAN =====
+  //statcard
   /**
    * MEMO: useMemo untuk menghitung 3 statistik kegiatan
    * DIGUNAKAN: Menampilkan di 3 StatCard di bagian atas dashboard
@@ -105,16 +105,16 @@ export default function Dashboard() {
    * 
    * STATISTIK YANG DIHITUNG:
    * 1. total: Jumlah total kegiatan yang belum selesai
-   * 2. urgent: Jumlah kegiatan dengan priority score ≥ 80 (sangat prioritas)
+   * 2. urgent: Jumlah kegiatan dengan priority score ≥ 74 (sangat prioritas)
    * 3. dueSoon: Jumlah kegiatan yang deadline-nya dalam 0-3 hari ke depan
    */
   const stats = useMemo(() => {
     // Statistik 1: Total kegiatan (semua yang ditampilkan)
     const total = rows.length
 
-    // Statistik 2: Kegiatan sangat prioritas (priority score ≥ 80)
+    // Statistik 2: Kegiatan sangat prioritas (priority score > 74)
     const urgent = rows.filter((row) =>
-      Number(row.total_priority_score || 0) >= 80
+      Number(row.total_priority_score || 0) > 85
     ).length
 
     // Statistik 3: Kegiatan yang deadline-nya dalam 3 hari atau kurang

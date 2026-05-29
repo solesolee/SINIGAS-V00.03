@@ -76,7 +76,7 @@ function generateNotifications(rows) {
       return
     }
 
-    if (pc === 'SANGAT TINGGI') {
+    if (score > 74) {
       notifs.push({
         id:       `priority-${row.id}`,
         type:     'priority',

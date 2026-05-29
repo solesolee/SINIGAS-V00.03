@@ -239,7 +239,7 @@ export default function DashboardAnalitik() {
   // DIGUNAKAN: Sebagai source data untuk bar chart, pie chart, line chart
   const [rows, setRows]       = useState([])
   
-  // STATE 2: stats - Hasil statistik dari PostgreSQL RPC (NEW: calculated by backend)
+  // STATE 2: stats - Hasil statistik dari PostgreSQL RPC 
   // DIGUNAKAN: Untuk 4 Summary Cards dan 6 Statistik Detail
   const [stats, setStats]     = useState(null)
   

@@ -32,7 +32,7 @@ function countUnread(rows) {
     if (left !== null && left < 0)       id = `overdue-${row.id}`
     else if (left !== null && left <= 1) id = `urgent-${row.id}`
     else if (left !== null && left <= 3) id = `soon-${row.id}`
-    else if (score >= 80)                id = `priority-${row.id}`
+    else if (score > 74)                id = `priority-${row.id}`
     if (id && !readIds.has(id)) count++
   })
   return count
