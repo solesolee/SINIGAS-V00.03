@@ -215,9 +215,12 @@ export default function Dashboard() {
         {/* Diurutkan berdasarkan total_priority_score (tinggi ke rendah) */}
         {!loading &&
           !error &&
-          rows.map((row) => (
-            <TaskCard key={row.id} row={row} mode="priority" />
-          ))}
+          rows.map((row) => {
+            // kalo terlambat jangan dimunculin
+            const left = daysLeft(row["deadline_at"]);
+            if (left !== null && left < 0) return;
+            return <TaskCard key={row.id} row={row} mode="priority" />;
+          })}
       </div>
     </section>
   );
