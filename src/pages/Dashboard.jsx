@@ -158,7 +158,7 @@ export default function Dashboard() {
         <StatCard
           title="Terlambat"
           value={stats.lateAssignments}
-          accent="text-amber-600"
+          accent="text-slate-500"
         />
 
         {/* Kartu 3: Kegiatan dengan priority score sangat tinggi (urgent) */}
