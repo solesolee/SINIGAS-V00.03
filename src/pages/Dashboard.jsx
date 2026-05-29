@@ -151,7 +151,7 @@ export default function Dashboard() {
         <StatCard
           title="Total Kegiatan"
           value={stats.total}
-          accent="text-blue-950"
+          accent="text-blue-500"
         />
 
         {/* Kartu 2: Kegiatan dengan deadline yang sudah lewat (late) */}
