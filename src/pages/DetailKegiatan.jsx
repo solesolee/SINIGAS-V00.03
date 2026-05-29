@@ -177,8 +177,7 @@ export default function DetailKegiatan() {
             label="DAMPAK NILAI"
             value={dampakNilai?.opsi_nilai_bobot_variabel?.label ?? '-'}
             sub={dampakNilai?.opsi_nilai_bobot_variabel?.nilai_bobot != null
-              ? `Bobot: ${dampakNilai.opsi_nilai_bobot_variabel.nilai_bobot}`
-              : undefined}
+              }
           />
           <StatCard
             label="TINGKAT KESULITAN"

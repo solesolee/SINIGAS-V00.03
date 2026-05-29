@@ -8,6 +8,8 @@ import {
   ListChecks,
   BarChart2,
   LogOut,
+  Menu,
+  X,
 } from 'lucide-react'
 
 function daysLeft(deadline) {
@@ -43,6 +45,7 @@ export default function DashboardLayout() {
   const [userName, setUserName]   = useState('User')
   const [userEmail, setUserEmail] = useState('')
   const [rows, setRows]           = useState([])
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     let alive = true
@@ -82,7 +85,91 @@ export default function DashboardLayout() {
   ]
 
   return (
-    <div className="h-screen overflow-hidden bg-slate-100 text-slate-800 flex">
+    <div className="h-screen overflow-hidden bg-slate-100 text-slate-800 flex relative">
+
+      {/* ── Mobile Sidebar Backdrop ── */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile Sidebar Drawer ── */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col justify-between bg-white px-6 py-8 shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div>
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h1 className="text-3xl font-black tracking-tight text-blue-950">SINIGAS</h1>
+              <p className="text-sm text-slate-500 mt-1">Sistem Notifikasi Tugas</p>
+            </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition"
+              aria-label="Close menu"
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          <nav className="space-y-2 text-[15px]">
+            {navItems.map(({ to, label, icon: Icon, end, badge }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center justify-between gap-3 rounded-2xl px-4 py-3 font-medium transition ${
+                    isActive
+                      ? 'bg-blue-950 text-amber-300 font-semibold'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <span className="flex items-center gap-3">
+                      <Icon size={18} className={isActive ? 'text-amber-300' : 'text-slate-400'} />
+                      {label}
+                    </span>
+                    {badge > 0 && (
+                      <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                        isActive ? 'bg-white/20 text-white' : 'bg-red-500 text-white'
+                      }`}>
+                        {badge}
+                      </span>
+                    )}
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+
+        <div className="space-y-2 border-t border-slate-200 pt-6">
+          <div className="mb-4 px-4 py-3 bg-slate-50 rounded-2xl">
+            <p className="text-xs text-slate-400 font-medium">Masuk sebagai</p>
+            <p className="text-sm font-semibold text-blue-950 truncate">{userName}</p>
+            <p className="text-xs text-slate-500 truncate">{userEmail}</p>
+          </div>
+          <button
+            onClick={() => {
+              setIsMobileMenuOpen(false)
+              handleLogout()
+            }}
+            className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-left font-semibold text-red-500 hover:bg-red-50 transition"
+            type="button"
+          >
+            <LogOut size={18} />
+            Keluar
+          </button>
+        </div>
+      </aside>
 
       {/* ── Sidebar ── */}
       <aside className="hidden lg:flex w-72 flex-col justify-between bg-white border-r border-slate-200 px-6 py-8 flex-shrink-0 overflow-y-auto">
@@ -144,11 +231,22 @@ export default function DashboardLayout() {
         {/* Header */}
         <header className="flex-shrink-0 border-b border-slate-200 bg-white/95 backdrop-blur z-10">
           <div className="flex items-center justify-between px-6 py-4 lg:px-10">
-            <div>
-              <p className="text-sm text-slate-500">SINIGAS</p>
-              <h2 className="text-lg font-semibold text-slate-700">
-                Selamat datang kembali, {userName}
-              </h2>
+            <div className="flex items-center gap-3">
+              {/* Hamburger Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="p-2 -ml-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-800 transition lg:hidden"
+                aria-label="Open menu"
+              >
+                <Menu size={24} />
+              </button>
+
+              <div>
+                <p className="text-sm text-slate-500">SINIGAS</p>
+                <h2 className="text-lg font-semibold text-slate-700">
+                  Selamat datang kembali, {userName}
+                </h2>
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
