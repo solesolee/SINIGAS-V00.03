@@ -147,7 +147,7 @@ export default function Dashboard() {
         <StatCard title="Total Kegiatan" value={stats.total} accent="text-blue-950" />
         
         {/* Kartu 2: Kegiatan dengan deadline dalam 3 hari (warning) */}
-        <StatCard title="Menunggu (≤3 hari)" value={stats.dueSoon} accent="text-amber-600" />
+        <StatCard title="Terlambat" value={stats.dueSoon} accent="text-slate-500" />
         
         {/* Kartu 3: Kegiatan dengan priority score sangat tinggi (urgent) */}
         <StatCard title="Sangat Prioritas" value={stats.urgent} accent="text-red-600" />
