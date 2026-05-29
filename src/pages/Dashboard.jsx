@@ -1,22 +1,22 @@
 // ===== IMPORT STATEMENTS =====
 // React hooks untuk state management (useState), side effects (useEffect), dan memoization (useMemo)
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from "react";
 
 // Supabase client untuk akses database dan autentikasi
-import { supabase } from '../lib/supabase'
+import { supabase } from "../lib/supabase";
 
 // Router navigation untuk redirect ke halaman lain (contoh: halaman login)
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
 // Component untuk menampilkan kartu statistik (Total Kegiatan, Menunggu, Sangat Prioritas)
-import StatCard from '../components/StatCard'
+import StatCard from "../components/StatCard";
 
 // Component untuk menampilkan kartu task prioritas dengan detail kegiatan
-import TaskCard from '../components/TaskCard'
+import TaskCard from "../components/TaskCard";
 
 // Import helper functions
-import { daysLeft } from '../utils/dateHelpers'
-import { getValue } from '../utils/taskHelpers'
+import { daysLeft } from "../utils/dateHelpers";
+import { getValue } from "../utils/taskHelpers";
 
 // ===== MAIN DASHBOARD COMPONENT =====
 /**
@@ -30,19 +30,19 @@ import { getValue } from '../utils/taskHelpers'
  */
 export default function Dashboard() {
   // Hook untuk navigasi ke halaman lain (digunakan: redirect ke /login atau /dashboard/semua)
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // STATE 1: loading - Menunjukkan apakah data sedang dimuat dari database
   // DIGUNAKAN: Untuk menampilkan loading message saat fetch data dari Supabase
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
   // STATE 2: rows - Menyimpan daftar kegiatan prioritas dari database
   // DIGUNAKAN: Untuk menampilkan kartu-kartu kegiatan dan menghitung statistik
-  const [rows, setRows] = useState([])
+  const [rows, setRows] = useState([]);
 
   // STATE 3: error - Menyimpan pesan error jika terjadi kesalahan saat fetch data
   // DIGUNAKAN: Untuk menampilkan pesan error ke user jika query database gagal
-  const [error, setError] = useState('')
+  const [error, setError] = useState("");
 
   // ===== EFFECT: FETCH DATA DARI DATABASE =====
   /**
@@ -62,47 +62,52 @@ export default function Dashboard() {
    * CLEANUP: Mengubah flag 'alive' untuk membatalkan update state jika component unmount
    */
   useEffect(() => {
-    let alive = true
+    let alive = true;
 
     const load = async () => {
-      setLoading(true)
-      setError('')
+      setLoading(true);
+      setError("");
 
       // Cek user authentication status
-      const { data: authData } = await supabase.auth.getUser()
-      const user = authData?.user
-      if (!user) { navigate('/login'); return }
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData?.user;
+      if (!user) {
+        navigate("/login");
+        return;
+      }
 
       // Query data kegiatan dari view_priority_tasks di Supabase
       const { data, error } = await supabase
-        .from('view_priority_tasks')
-        .select('*')
-        .not('status', 'eq', 'selesai')
-        .eq('user_id', user.id)
-        .order('total_priority_score', { ascending: false, nullsFirst: false })
+        .from("view_priority_tasks")
+        .select("*")
+        .not("status", "eq", "selesai")
+        .eq("user_id", user.id)
+        .order("total_priority_score", { ascending: false, nullsFirst: false });
 
-      if (!alive) return
+      if (!alive) return;
 
       if (error) {
-        setError(error.message || 'Gagal mengambil data dashboard')
-        setRows([])
+        setError(error.message || "Gagal mengambil data dashboard");
+        setRows([]);
       } else {
-        setRows(data || [])
+        setRows(data || []);
       }
 
-      setLoading(false)
-    }
+      setLoading(false);
+    };
 
-    load()
-    return () => { alive = false }
-  }, [rows.length])
+    load();
+    return () => {
+      alive = false;
+    };
+  }, [rows.length]);
 
   //statcard
   /**
    * MEMO: useMemo untuk menghitung 3 statistik kegiatan
    * DIGUNAKAN: Menampilkan di 3 StatCard di bagian atas dashboard
    * DIHITUNG ULANG: Hanya saat rows berubah (dependency: rows)
-   * 
+   *
    * STATISTIK YANG DIHITUNG:
    * 1. total: Jumlah total kegiatan yang belum selesai
    * 2. urgent: Jumlah kegiatan dengan priority score ≥ 74 (sangat prioritas)
@@ -110,33 +115,32 @@ export default function Dashboard() {
    */
   const stats = useMemo(() => {
     // Statistik 1: Total kegiatan (semua yang ditampilkan)
-    const total = rows.length
+    const total = rows.length;
 
     // Statistik 2: Kegiatan sangat prioritas (priority score > 74)
-    const urgent = rows.filter((row) =>
-      Number(row.total_priority_score || 0) > 85
-    ).length
+    const urgent = rows.filter(
+      (row) => Number(row.total_priority_score || 0) > 85,
+    ).length;
 
-    // Statistik 3: Kegiatan yang deadline-nya dalam 3 hari atau kurang
-    const dueSoon = rows.filter((row) => {
-      const left = daysLeft(getValue(row, ['deadline_at', 'deadline']))
-      return left !== null && left >= 0 && left <= 3
-    }).length
+    // statistik 3: Kegiatan yang sudah terlambat
+    const lateAssignments = rows.filter((row) => {
+      const left = daysLeft(row["deadline_at"]);
+      return left !== null && left < 0;
+    }).length;
 
-    return { total, urgent, dueSoon }
-  }, [rows])
+    return { total, urgent, lateAssignments };
+  }, [rows]);
 
   // ===== RENDER DASHBOARD UI =====
   return (
     // Container utama dashboard dengan padding responsive
     <section className="px-6 py-8 lg:px-10">
-      
       {/* BAGIAN 1: HEADER DASHBOARD */}
       <div className="mb-8">
-        <h1 className="text-4xl font-black tracking-tight text-blue-950">Dashboard</h1>
-        <p className="mt-2 text-slate-600">
-          Ringkasan prioritas tugas anda.
-        </p>
+        <h1 className="text-4xl font-black tracking-tight text-blue-950">
+          Dashboard
+        </h1>
+        <p className="mt-2 text-slate-600">Ringkasan prioritas tugas anda.</p>
       </div>
 
       {/* BAGIAN 2: KARTU STATISTIK KEGIATAN */}
@@ -144,22 +148,34 @@ export default function Dashboard() {
       {/* Layout: 1 kolom di mobile, 2 kolom di tablet, 3 kolom di desktop */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {/* Kartu 1: Total kegiatan (semua status) */}
-        <StatCard title="Total Kegiatan" value={stats.total} accent="text-blue-950" />
-        
-        {/* Kartu 2: Kegiatan dengan deadline dalam 3 hari (warning) */}
-        <StatCard title="Menunggu (≤3 hari)" value={stats.dueSoon} accent="text-amber-600" />
-        
+        <StatCard
+          title="Total Kegiatan"
+          value={stats.total}
+          accent="text-blue-950"
+        />
+
+        {/* Kartu 2: Kegiatan dengan deadline yang sudah lewat (late) */}
+        <StatCard
+          title="Terlambat"
+          value={stats.lateAssignments}
+          accent="text-amber-600"
+        />
+
         {/* Kartu 3: Kegiatan dengan priority score sangat tinggi (urgent) */}
-        <StatCard title="Sangat Prioritas" value={stats.urgent} accent="text-red-600" />
+        <StatCard
+          title="Prioritas Sangat Tinggi"
+          value={stats.urgent}
+          accent="text-red-600"
+        />
       </div>
 
       {/* BAGIAN 3: HEADER DAFTAR KEGIATAN + TOMBOL LIHAT SEMUA */}
       <div className="mt-10 flex items-center justify-between">
         <h3 className="text-2xl font-bold text-blue-950">Kegiatan Prioritas</h3>
-        
+
         {/* Tombol untuk redirect ke halaman /dashboard/semua (melihat semua kegiatan) */}
         <button
-          onClick={() => navigate('/dashboard/semua')}
+          onClick={() => navigate("/dashboard/semua")}
           className="text-sm font-semibold text-blue-950 hover:underline"
           type="button"
         >
@@ -170,7 +186,6 @@ export default function Dashboard() {
       {/* BAGIAN 4: DAFTAR KEGIATAN PRIORITAS */}
       {/* Menampilkan berbagai kondisi: loading, error, empty state, atau list kegiatan */}
       <div className="mt-5 space-y-4">
-        
         {/* KONDISI 1: LOADING STATE */}
         {/* Tampil saat data sedang diambil dari database */}
         {loading && (
@@ -198,10 +213,12 @@ export default function Dashboard() {
         {/* KONDISI 4: DAFTAR KEGIATAN */}
         {/* Render PriorityTaskCard untuk setiap kegiatan yang didapat dari database */}
         {/* Diurutkan berdasarkan total_priority_score (tinggi ke rendah) */}
-        {!loading && !error && rows.map((row) => (
-          <TaskCard key={row.id} row={row} mode="priority" />
-        ))}
+        {!loading &&
+          !error &&
+          rows.map((row) => (
+            <TaskCard key={row.id} row={row} mode="priority" />
+          ))}
       </div>
     </section>
-  )
+  );
 }
